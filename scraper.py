@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Load configurations
     URL_BASE = config.get('Remote', 'URL_BASE')
     URL_HOME = config.get('Remote', 'URL_HOME')
-    ITEMS_PER_PAGE = int(config.get('Remote', 'ITEMS_PER_PAGE'))
+    ITEMS_PER_PAGE_DEFAULT = int(config.get('Remote', 'ITEMS_PER_PAGE_DEFAULT'))
     INFO_TO_SCRAPE = json.loads(config.get('Remote', 'INFO_TO_SCRAPE'))
     FILE_TO_SAVE = config.get('Results', 'FILE_TO_SAVE')
     LOG_FILE = config.get('Logging', 'LOG_FILE')
@@ -114,14 +114,23 @@ if __name__ == '__main__':
         logger.info('Finished downloading page - {}'.format(url))
 
 
-        # find the post url & data in Javascript AJAX 
-        search_res = re.search('\$\.post\(\"(.*)\".*(\{.*\})', page.text)
+        # Find the post url & data in Javascript AJAX 
+        search_res = re.search(r'\$\.post\(\"(.*)\" *\+ *(.*), *(\{.*\})', page.text)
 
         if not search_res:
             continue
 
-        url_more = URL_BASE+search_res.group(1)
-        post_data = json.loads(search_res.group(2))
+        url_more = URL_BASE+search_res.group(1)             # ajax call url
+        var_offset_name = search_res.group(2)               # value of param in the url (next index)
+        post_data = json.loads(search_res.group(3))         # data to post with the ajax call
+
+        # Find the value of offset
+        res = re.search(r'var.*'+var_offset_name+r' *= *(\d+)', page.text)          
+        if res:
+            items_per_page = int(res.group(1))
+        else:
+            items_per_page = ITEMS_PER_PAGE_DEFAULT
+
 
         # send requests to fetch product info (page by page)
         more = True 
@@ -161,7 +170,7 @@ if __name__ == '__main__':
                             closeup('Exiting program --------------')
                             sys.exit()
 
-                    index_from += ITEMS_PER_PAGE
+                    index_from += items_per_page
             else:
                 more = False
 
