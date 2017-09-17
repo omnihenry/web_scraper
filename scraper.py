@@ -41,6 +41,7 @@ if __name__ == '__main__':
     # Load configurations
     URL_BASE = config.get('Remote', 'URL_BASE')
     URL_HOME = config.get('Remote', 'URL_HOME')
+    CSS_CLASS_HOMEPAGE = config.get('Remote', 'CSS_CLASS_HOMEPAGE')
     ITEMS_PER_PAGE_DEFAULT = int(config.get('Remote', 'ITEMS_PER_PAGE_DEFAULT'))
     INFO_TO_SCRAPE = json.loads(config.get('Remote', 'INFO_TO_SCRAPE'))
     FILE_TO_SAVE = config.get('Results', 'FILE_TO_SAVE')
@@ -90,7 +91,7 @@ if __name__ == '__main__':
 
     urls_product_list = []
 
-    for div in soup.find_all('div', attrs = {'class': 'fixtureLink left'}):
+    for div in soup.find_all('div', attrs = {'class': CSS_CLASS_HOMEPAGE}):
         href = div.find('a')['href']
         if href:
             if href == '#':
