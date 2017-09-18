@@ -1,3 +1,14 @@
+#!/usr/bin/python
+# title           :scraper.py
+# description     :This is the main scipt for web scraping
+# author          :Hongbo Wang
+# date            :20170916
+# version         :0.1
+# usage           :python scraper.py
+# notes           :
+# python_version  :3.4.2+  
+#==============================================================================
+
 import re
 import sys
 import json
@@ -9,6 +20,16 @@ from bs4 import BeautifulSoup, Tag
 
 
 def scrape_info_by_title(info_title='', info_list=[]):
+    '''
+    Scrape web pages for the keyword provided.
+
+    :param info_title: the content of which to search for
+    :param info_list: in which results are saved
+    :type info_title: str
+    :type info_list: list
+    :returns: whether execution is successful
+    :rtype: boolean
+    '''
     if not info_title:
         logger.error('No info title (keyword) provided.')
         return False
@@ -20,7 +41,14 @@ def scrape_info_by_title(info_title='', info_list=[]):
                 break
     return True
 
+
 def closeup(msg):
+    '''
+    Clean up and release any resources.
+
+    :param msg: message to log
+    :type msg: str
+    '''
     logger.info(msg)
     if not out_file.closed:
         try:
